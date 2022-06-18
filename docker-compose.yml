@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+    # image project
+    saleswebmvc:
+        image: fermotta/saleswebmvc
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports: 
+            - "5000:5000"
+            - "5001:5001"
+        environment:
+            ASPNETCORE_HTTP_PORT: https://+:5001
+            ASPNETCORE_URLS: http://+:5000
+        volumes:
+            - ./:/var/www
+        networks: 
+            - saleswebmvc_net
+
+    # db mysql
+    mysql:
+        container_name: fermotta-mysql
+        image: mysql:8.0
+        restart: unless-stopped
+        environment: 
+            MYSQL_DATABASE: sales_web_mvc
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_PASSWORD: root
+        volumes: 
+            - ./.docker/mysql/dbdata:/var/lib/mysql
+        ports: 
+            - "3388:3306"
+        networks: 
+            - saleswebmvc_net
+            
+    # phpmyadmin
+    phpmyadmin:
+        image: phpmyadmin
+        restart: unless-stopped
+        ports: 
+            - "8080:80"
+        environment:
+            - PMA_HOST=mysql
+            - PMA_PORT=3306
+        depends_on:
+            - mysql
+        networks: 
+            - saleswebmvc_net
+
+networks: 
+    saleswebmvc_net:
+        driver: bridge
