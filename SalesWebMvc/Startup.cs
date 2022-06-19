@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SalesWebMvc.Data;
+using SalesWebMvc.Services;
 namespace SalesWebMvc
 {
     public class Startup
@@ -28,6 +29,8 @@ namespace SalesWebMvc
                 );
 
             //services.AddScoped<SeedingService>();
+            services.AddScoped<SellerService>();
+            services.AddScoped<DepartmentService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)
