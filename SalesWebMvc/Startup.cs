@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SalesWebMvc.Data;
 namespace SalesWebMvc
 {
-    public class Startup : IStartup
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -26,6 +26,8 @@ namespace SalesWebMvc
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors()
                 );
+
+            //services.AddScoped<SeedingService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)
@@ -35,8 +37,10 @@ namespace SalesWebMvc
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
+
             }
 
+            //SeedingService.Seed();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -46,30 +50,11 @@ namespace SalesWebMvc
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            //seed database 
+            AppDbInitializer.Seed(app);
+
         }
     }
 
-    public interface IStartup
-    {
-        IConfiguration Configuration { get; }
-        void Configure(WebApplication app, IWebHostEnvironment environment);
-        void ConfigureServices(IServiceCollection services);
-    }
-
-    public static class StartupExtensions
-    {
-        public static WebApplicationBuilder UseStartup<TStartup>(this WebApplicationBuilder WebAppBuilder) where TStartup : IStartup
-        {
-            var startup = Activator.CreateInstance(typeof(TStartup), WebAppBuilder.Configuration) as IStartup;
-            if (startup == null) throw new ArgumentException("Invalid Startup.cs class!");
-
-            startup.ConfigureServices(WebAppBuilder.Services);
-
-            var app = WebAppBuilder.Build();
-            startup.Configure(app, app.Environment);
-
-            app.Run();
-            return WebAppBuilder;
-        }
-    }
 }
