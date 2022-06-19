@@ -1,4 +1,7 @@
-﻿namespace SalesWebMvc
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using SalesWebMvc.Data;
+namespace SalesWebMvc
 {
     public class Startup : IStartup
     {
@@ -13,6 +16,16 @@
         {
             // Add services to the container.
             services.AddControllersWithViews();
+
+            var serverVersion = new MySqlServerVersion(new Version(8, 0));
+
+            services.AddDbContext<SalesWebMvcContext>(
+            dbContextOptions => dbContextOptions
+                .UseMySql(Configuration.GetConnectionString("SalesWebMvcContext"), serverVersion)
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()
+                );
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)
