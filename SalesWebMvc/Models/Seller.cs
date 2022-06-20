@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+
 namespace SalesWebMvc.Models
 {
     public class Seller
@@ -35,8 +37,8 @@ namespace SalesWebMvc.Models
 
         public Seller()
         {
-
         }
+
         public Seller(int id, string name, string email, DateTime birthDate, double baseSalary, Department department)
         {
             Id = id;
@@ -51,10 +53,12 @@ namespace SalesWebMvc.Models
         {
             Sales.Add(sr);
         }
+
         public void RemoveSales(SalesRecord sr)
         {
             Sales.Remove(sr);
         }
+
         public double TotalSales(DateTime initial, DateTime final)
         {
             return Sales.Where(sr => sr.Date >= initial && sr.Date <= final).Sum(sr => sr.Amount);
